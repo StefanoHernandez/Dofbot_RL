@@ -1,0 +1,19 @@
+# ROS
+build/
+devel/
+*.pyc
+__pycache__/
+
+# Docker
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temp
+*.swp
+*~
