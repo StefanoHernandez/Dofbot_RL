@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   dofbot_sim:
     build:
@@ -27,9 +25,9 @@ services:
       # GPU devices for hardware acceleration
       - /dev/dri:/dev/dri:rw
       # Mount the entire DOFBOT project
-      - ../Jetson-dofbot-Code (2)/dofbot_ws/src:/root/dofbot_ws/src:rw
+      - ../Jetson-dofbot-Code/dofbot_ws/src:/root/dofbot_ws/src:rw
       # Mount additional libraries if needed
-      - ../Jetson-dofbot-Code (2)/Dofbot:/root/Dofbot:ro
+      - ../Jetson-dofbot-Code/Dofbot:/root/Dofbot:ro
       # Mount documentation for reference
       - ../dofbot-jetson_nano:/root/docs:ro
       # Mount helper scripts

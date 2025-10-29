@@ -150,8 +150,9 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-add_executable(dofbot_server src/dofbot_server.cpp)
-target_link_libraries(dofbot_server   ${catkin_LIBRARIES} libdofbot_kinemarics.so)
+# Commented out: libdofbot_kinemarics.so is compiled for ARM64 (Jetson)
+# add_executable(dofbot_server src/dofbot_server.cpp)
+# target_link_libraries(dofbot_server   ${catkin_LIBRARIES} libdofbot_kinemarics.so)
 #############
 ## Install ##
 #############
