@@ -1,0 +1,94 @@
+<mujoco model="dofbot">
+  <compiler angle="radian"
+            meshdir="/root/mujoco_models/meshes"
+            autolimits="true"
+            balanceinertia="true"
+            strippath="false"/>
+
+  <option timestep="0.002"
+          integrator="RK4"
+          gravity="0 0 -9.81"/>
+
+  <visual>
+    <global offwidth="1920" offheight="1080"/>
+    <quality shadowsize="4096"/>
+    <map force="0.1" fogstart="3" fogend="5"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512"
+             rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true"
+              reflectance=".2"/>
+
+    <!-- DOFBOT meshes - using OBJ files for better MuJoCo compatibility -->
+    <mesh name="base_link" file="base_link.obj"/>
+    <mesh name="link1" file="link1.obj"/>
+    <mesh name="link2" file="link2.obj"/>
+    <mesh name="link3" file="link3.obj"/>
+    <mesh name="link4" file="link4.obj"/>
+    <mesh name="link5" file="link5.obj"/>
+  </asset>
+
+  <worldbody>
+    <light name="spotlight" mode="targetbodycom" target="base_link"
+           directional="false" diffuse=".8 .8 .8" specular="0.3 0.3 0.3"
+           pos="0 0 4" dir="0 0 -1" castshadow="false"/>
+    <geom name="floor" pos="0 0 0" size="0 0 .05" type="plane" material="grid"
+          condim="3"/>
+
+    <!-- DOFBOT Robot -->
+    <body name="base_link" pos="0 0 0.05">
+      <inertial pos="0 0 0.03" mass="0.2" diaginertia="0.001 0.001 0.001"/>
+      <geom type="mesh" mesh="base_link" rgba="0.59 0.67 0.68 1"/>
+
+      <body name="link1" pos="0 0 0.06605" quat="0.9999417 -0.0054025 0 0">
+        <inertial pos="0 0 0.02" mass="0.1" diaginertia="0.0005 0.0005 0.0005"/>
+        <joint name="joint1" type="hinge" axis="0 0 1"
+               range="-1.5708 1.5708" damping="0.1" frictionloss="0.01"/>
+        <geom type="mesh" mesh="link1" rgba="0 0.63 0.24 1"/>
+
+        <body name="link2" pos="0 -0.00031873 0.04145" quat="0.7071068 0 0.7071068 0">
+          <inertial pos="-0.04 0 0" mass="0.08" diaginertia="0.0003 0.0003 0.0003"/>
+          <joint name="joint2" type="hinge" axis="0 0 1"
+                 range="-1.5708 1.5708" damping="0.1" frictionloss="0.01"/>
+          <geom type="mesh" mesh="link2" rgba="0.59 0.67 0.68 1"/>
+
+          <body name="link3" pos="-0.08285 0 0">
+            <inertial pos="-0.04 0 0" mass="0.08" diaginertia="0.0003 0.0003 0.0003"/>
+            <joint name="joint3" type="hinge" axis="0 0 1"
+                   range="-1.5708 1.5708" damping="0.1" frictionloss="0.01"/>
+            <geom type="mesh" mesh="link3" rgba="0 0.63 0.24 1"/>
+
+            <body name="link4" pos="-0.08285 0 0" quat="0.9999656 0 0 0.00415405">
+              <inertial pos="-0.035 0 0" mass="0.06" diaginertia="0.0002 0.0002 0.0002"/>
+              <joint name="joint4" type="hinge" axis="0 0 1"
+                     range="-1.5708 1.5708" damping="0.1" frictionloss="0.01"/>
+              <geom type="mesh" mesh="link4" rgba="0.59 0.67 0.68 1"/>
+
+              <body name="link5" pos="-0.07385 -0.001 0" quat="0.7071068 0 -0.7071068 0">
+                <inertial pos="0 0 0.02" mass="0.04" diaginertia="0.0001 0.0001 0.0001"/>
+                <joint name="joint5" type="hinge" axis="0 0 1"
+                       range="-1.5708 3.1416" damping="0.1" frictionloss="0.01"/>
+                <geom type="mesh" mesh="link5" rgba="1 1 1 1"/>
+
+                <!-- End effector site -->
+                <site name="end_effector" pos="0 0 0.05" size="0.01"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- Position control for all joints -->
+    <position name="joint1_pos" joint="joint1" kp="10" ctrlrange="-1.5708 1.5708"/>
+    <position name="joint2_pos" joint="joint2" kp="10" ctrlrange="-1.5708 1.5708"/>
+    <position name="joint3_pos" joint="joint3" kp="10" ctrlrange="-1.5708 1.5708"/>
+    <position name="joint4_pos" joint="joint4" kp="10" ctrlrange="-1.5708 1.5708"/>
+    <position name="joint5_pos" joint="joint5" kp="10" ctrlrange="-1.5708 3.1416"/>
+  </actuator>
+
+</mujoco>

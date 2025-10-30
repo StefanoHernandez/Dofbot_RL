@@ -1,0 +1,60 @@
+services:
+  dofbot_sim:
+    build:
+      context: .
+      dockerfile: Dockerfile.noetic
+    image: dofbot_noetic:latest
+    container_name: dofbot_noetic_simulation
+
+    # Enable GUI applications (Gazebo, RViz, MuJoCo)
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/tmp/.docker.xauth
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - __GLX_VENDOR_LIBRARY_NAME=nvidia
+      - __NV_PRIME_RENDER_OFFLOAD=1
+      - __VK_LAYER_NV_optimus=NVIDIA_only
+      # MuJoCo rendering settings
+      - MUJOCO_GL=egl
+      - LIBGL_ALWAYS_SOFTWARE=0
+
+    # Mount X11 socket and workspace
+    volumes:
+      # X11 for GUI
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      # GPU devices for hardware acceleration
+      - /dev/dri:/dev/dri:rw
+      # Mount the entire DOFBOT project
+      - ../Jetson-dofbot-Code/dofbot_ws/src:/root/dofbot_ws/src:rw
+      # Mount additional libraries if needed
+      - ../Jetson-dofbot-Code/Dofbot:/root/Dofbot:ro
+      # Mount documentation for reference
+      - ../dofbot-jetson_nano:/root/docs:ro
+      # Mount helper scripts
+      - ./setup_workspace.sh:/root/dofbot_ws/setup_workspace.sh:ro
+      - ./test_simulation.sh:/root/dofbot_ws/test_simulation.sh:ro
+      - ./test_gpu.sh:/root/dofbot_ws/test_gpu.sh:ro
+      - ./fix_kinematics_lib.sh:/root/dofbot_ws/fix_kinematics_lib.sh:ro
+      # Mount directory for MuJoCo models
+      - ./mujoco_models:/root/mujoco_models:rw
+      # Mount directory for RL scripts
+      - ./rl_scripts:/root/rl_scripts:rw
+
+    # Network mode for ROS communication
+    network_mode: host
+
+    # Keep container running
+    stdin_open: true
+    tty: true
+
+    # Add video group for GPU access
+    group_add:
+      - video
+
+    # NVIDIA GPU support for Gazebo and MuJoCo acceleration
+    runtime: nvidia
+
+    command: /bin/bash

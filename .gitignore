@@ -1,19 +1,50 @@
-# ROS
-build/
-devel/
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ROS
+devel/
+logs/
+build/
+bin/
+msg_gen/
+srv_gen/
+build_isolated/
+devel_isolated/
+
+# MuJoCo generated meshes (OBJ files are auto-generated from STL)
+docker/mujoco_models/meshes/*.obj
+
+# RL training outputs
+*.pt
+*.pth
+*.h5
+*.pkl
+*.zip
+logs/
+runs/
+tensorboard/
+videos/
 
 # Docker
 .env
+*.log
 
 # IDE
 .vscode/
 .idea/
-
-# Logs
-*.log
-
-# Temp
 *.swp
+*.swo
 *~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Large model files (exclude from git)
+model*.pt
+*.weights
+*.onnx

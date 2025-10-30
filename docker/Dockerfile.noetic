@@ -1,0 +1,112 @@
+# ROS Noetic (Ubuntu 20.04) environment for DOFBOT simulation with MuJoCo support
+FROM osrf/ros:noetic-desktop-full
+
+# Prevent interactive prompts during installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ROS_DISTRO=noetic
+
+# Install essential dependencies
+RUN apt-get update && apt-get install -y \
+    # Build tools
+    build-essential \
+    cmake \
+    git \
+    python3-catkin-tools \
+    python3-rosdep \
+    python3-rosinstall \
+    python3-rosinstall-generator \
+    python3-wstool \
+    python3-osrf-pycommon \
+    # MoveIt and Gazebo
+    ros-noetic-moveit \
+    ros-noetic-moveit-visual-tools \
+    ros-noetic-gazebo-ros \
+    ros-noetic-gazebo-ros-control \
+    ros-noetic-gazebo-ros-pkgs \
+    # Controllers
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-controller-manager \
+    ros-noetic-joint-state-controller \
+    ros-noetic-effort-controllers \
+    ros-noetic-position-controllers \
+    ros-noetic-velocity-controllers \
+    # Kinematics and planning
+    ros-noetic-kdl-parser \
+    ros-noetic-kdl-conversions \
+    ros-noetic-trac-ik-kinematics-plugin \
+    # Vision and sensors
+    ros-noetic-cv-bridge \
+    ros-noetic-image-transport \
+    ros-noetic-camera-info-manager \
+    # Python 3 dependencies
+    python3-pip \
+    python3-numpy \
+    python3-opencv \
+    python3-scipy \
+    python3-yaml \
+    python3-dev \
+    # OpenGL and rendering libraries for MuJoCo
+    libgl1-mesa-dev \
+    libgl1-mesa-glx \
+    libglew-dev \
+    libosmesa6-dev \
+    patchelf \
+    # Utilities
+    wget \
+    curl \
+    vim \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install Python packages for RL and MuJoCo
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Install core dependencies first
+RUN python3 -m pip install \
+    numpy \
+    Cython
+
+# Install MuJoCo
+RUN python3 -m pip install mujoco
+
+# Install RL libraries
+RUN python3 -m pip install \
+    gymnasium \
+    stable-baselines3
+
+# Install PyTorch (CPU version for smaller image)
+RUN python3 -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# Install additional useful libraries
+RUN python3 -m pip install \
+    tensorboard \
+    pandas \
+    matplotlib \
+    seaborn \
+    jupyter \
+    ipython \
+    tqdm
+
+# Create workspace directory
+RUN mkdir -p /root/dofbot_ws/src
+
+# Setup ROS environment
+RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc && \
+    echo "source /root/dofbot_ws/devel/setup.bash 2>/dev/null || true" >> /root/.bashrc && \
+    echo "export PYTHONPATH=/root/dofbot_ws/devel/lib/python3/dist-packages:\$PYTHONPATH" >> /root/.bashrc
+
+# Set working directory
+WORKDIR /root/dofbot_ws
+
+# Initialize rosdep
+RUN rosdep update
+
+# Create directory for MuJoCo models and scripts
+RUN mkdir -p /root/mujoco_models /root/rl_scripts
+
+# Expose ROS master port, Gazebo port, and Jupyter port
+EXPOSE 11311 11345 8888
+
+# Default command
+CMD ["/bin/bash"]
